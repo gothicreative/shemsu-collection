@@ -18,19 +18,47 @@ const OrderSummary = () => {
 	const formattedSavings = savings.toFixed(2);
 
 	const handlePayment = async () => {
-		const stripe = await stripePromise;
-		const res = await axios.post("/payments/create-checkout-session", {
-			products: cart,
-			couponCode: coupon ? coupon.code : null,
-		});
+		try {
+			const stripe = await stripePromise;
+			
+			// Validate cart data before sending
+			if (!cart || cart.length === 0) {
+				console.error("Cart is empty");
+				return;
+			}
+			
+			const res = await axios.post("/payments/create-checkout-session", {
+				products: cart,
+				couponCode: coupon ? coupon.code : null,
+			});
 
-		const session = res.data;
-		const result = await stripe.redirectToCheckout({
-			sessionId: session.id,
-		});
+			const session = res.data;
+			
+			if (!session.id) {
+				console.error("Invalid session data received:", session);
+				return;
+			}
+			
+			const result = await stripe.redirectToCheckout({
+				sessionId: session.id,
+			});
 
-		if (result.error) {
-			console.error("Error:", result.error);
+			if (result.error) {
+				console.error("Stripe error:", result.error);
+			}
+		} catch (error) {
+			console.error("Payment error:", error);
+			if (error.response) {
+				// Server responded with error status
+				console.error("Server error response:", error.response.data);
+				console.error("Status code:", error.response.status);
+			} else if (error.request) {
+				// Request was made but no response received
+				console.error("No response received:", error.request);
+			} else {
+				// Something else happened
+				console.error("Error message:", error.message);
+			}
 		}
 	};
 

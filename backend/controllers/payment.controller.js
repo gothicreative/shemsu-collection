@@ -7,8 +7,20 @@ export const createCheckoutSession = async (req, res) => {
 	try {
 		const { products, couponCode } = req.body;
 
+		// Enhanced validation
+		if (!req.user) {
+			return res.status(401).json({ error: "User not authenticated" });
+		}
+
 		if (!Array.isArray(products) || products.length === 0) {
 			return res.status(400).json({ error: "Invalid or empty products array" });
+		}
+
+		// Validate each product in the array
+		for (const product of products) {
+			if (!product._id || !product.name || typeof product.price !== 'number' || typeof product.quantity !== 'number') {
+				return res.status(400).json({ error: "Invalid product data structure", product });
+			}
 		}
 
 		let totalAmount = 0;
@@ -33,9 +45,18 @@ export const createCheckoutSession = async (req, res) => {
 		let coupon = null;
 		if (couponCode) {
 			coupon = await Coupon.findOne({ code: couponCode, userId: req.user._id, isActive: true });
-			if (coupon) {
+			// Check if coupon exists and hasn't expired
+			if (coupon && coupon.expirationDate > new Date()) {
 				totalAmount -= Math.round((totalAmount * coupon.discountPercentage) / 100);
+			} else {
+				// If coupon is invalid or expired, set coupon to null
+				coupon = null;
 			}
+		}
+
+		// Ensure total amount is positive
+		if (totalAmount <= 0) {
+			return res.status(400).json({ error: "Total amount must be greater than zero" });
 		}
 
 		const session = await stripe.checkout.sessions.create({
@@ -71,6 +92,18 @@ export const createCheckoutSession = async (req, res) => {
 		res.status(200).json({ id: session.id, totalAmount: totalAmount / 100 });
 	} catch (error) {
 		console.error("Error processing checkout:", error);
+		// More detailed error response
+		if (error.type === 'StripeCardError') {
+			return res.status(400).json({ message: "Card error", error: error.message });
+		} else if (error.type === 'StripeRateLimitError') {
+			return res.status(429).json({ message: "Too many requests", error: error.message });
+		} else if (error.type === 'StripeInvalidRequestError') {
+			return res.status(400).json({ message: "Invalid request", error: error.message });
+		} else if (error.type === 'StripeAPIError') {
+			return res.status(500).json({ message: "Stripe API error", error: error.message });
+		} else if (error.type === 'StripeConnectionError') {
+			return res.status(503).json({ message: "Network error", error: error.message });
+		}
 		res.status(500).json({ message: "Error processing checkout", error: error.message });
 	}
 };
@@ -122,7 +155,7 @@ export const checkoutSuccess = async (req, res) => {
             totalAmount: session.amount_total / 100, // convert from cents to dollars,
             stripeSessionId: sessionId,
         });
-// ...existing code...
+
 await newOrder.save();
 
 // Clear the user's cart after successful purchase
@@ -157,7 +190,7 @@ async function createNewCoupon(userId) {
 	const newCoupon = new Coupon({
 		code: "GIFT" + Math.random().toString(36).substring(2, 8).toUpperCase(),
 		discountPercentage: 10,
-		expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+		expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
 		userId: userId,
 	});
 
