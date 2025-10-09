@@ -5,6 +5,7 @@ import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
 import CategoryPage from "./pages/CategoryPage";
+import CollectionsPage from "./pages/CollectionsPage";
 
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
@@ -55,18 +56,12 @@ function App() {
 	if (checkingAuth) return <LoadingSpinner />;
 
 	return (
-		<div className='min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white relative overflow-hidden'>
-			{/* Background gradient */}
-			<div className='absolute inset-0 overflow-hidden'>
-				<div className='absolute inset-0'>
-					<div className='absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(ellipse_at_top,rgba(14,165,233,0.15)_0%,rgba(5,81,129,0.1)_45%,rgba(0,0,0,0.1)_100%)]' />
-				</div>
-			</div>
-
+		<div className='min-h-screen bg-gray-900 text-white relative overflow-hidden'>
 			<div className='relative z-50 pt-20'>
 				<Navbar onShowHowToUse={handleShowHowToUse} />
 				<Routes>
 					<Route path='/' element={<HomePage />} />
+					<Route path='/collections' element={<CollectionsPage />} />
 					<Route path='/signup' element={!user ? <SignUpPage /> : <Navigate to='/' />} />
 					<Route path='/login' element={!user ? <LoginPage /> : <Navigate to='/' />} />
 					<Route

@@ -115,6 +115,31 @@ export const getRecommendedProducts = async (req, res) => {
 	}
 };
 
+export const getRandomProducts = async (req, res) => {
+	try {
+		const products = await Product.aggregate([
+			{
+				$sample: { size: 12 },
+			},
+			{
+				$project: {
+					_id: 1,
+					name: 1,
+					description: 1,
+					image: 1,
+					price: 1,
+					category: 1,
+				},
+			},
+		]);
+
+		res.json(products);
+	} catch (error) {
+		console.log("Error in getRandomProducts controller", error.message);
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
+};
+
 export const getProductsByCategory = async (req, res) => {
 	const { category } = req.params;
 	try {

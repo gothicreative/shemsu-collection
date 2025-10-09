@@ -30,10 +30,10 @@ const HowToUseOverlay = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-primary-700">
+      <div className="bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-emerald-700">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-primary-400">How to Use This Shop</h2>
+            <h2 className="text-2xl font-bold text-emerald-400">How to Use This Shop</h2>
             <button 
               onClick={onClose}
               className="text-gray-400 hover:text-white transition-colors"
@@ -51,7 +51,7 @@ const HowToUseOverlay = ({ onClose }) => {
               {steps.map((step, index) => (
                 <div key={index} className="bg-gray-700 p-4 rounded-lg border border-gray-600">
                   <div className="flex items-start space-x-3">
-                    <div className="bg-primary-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-1">
+                    <div className="bg-emerald-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-1">
                       {index + 1}
                     </div>
                     <div>
@@ -63,8 +63,8 @@ const HowToUseOverlay = ({ onClose }) => {
               ))}
             </div>
             
-            <div className="bg-gray-900 p-4 rounded-lg border border-primary-800">
-              <h3 className="font-bold text-primary-400 mb-2">Quick Tips</h3>
+            <div className="bg-gray-900 p-4 rounded-lg border border-emerald-800">
+              <h3 className="font-bold text-emerald-400 mb-2">Quick Tips</h3>
               <ul className="text-gray-300 space-y-1 text-sm list-disc pl-5">
                 <li>Create an account to save your information for faster checkout</li>
                 <li>Check your email for order confirmations and updates</li>
@@ -73,8 +73,8 @@ const HowToUseOverlay = ({ onClose }) => {
                 <li>explore the admin page by logging in with email: abula@gmail.com, password: 123456</li>
               </ul>
             </div>
-                <div className="bg-gray-900 p-4 rounded-lg border border-primary-800">
-              <h3 className="font-bold text-primary-400 mb-2">About the Creator</h3>
+                <div className="bg-gray-900 p-4 rounded-lg border border-emerald-800">
+              <h3 className="font-bold text-emerald-400 mb-2">About the Creator</h3>
               <ul className="text-gray-300 space-y-1 text-sm list-disc pl-5">
                 <li><strong>NAME:</strong> Hafiz Adem</li>
                 <li><strong>EMAIL:</strong> <a href="mailto:hafizadem71@gmail.com">hafizadem71@gmail.com</a></li>
@@ -87,7 +87,7 @@ const HowToUseOverlay = ({ onClose }) => {
             <div className="flex justify-end">
               <button
                 onClick={onClose}
-                className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-6 rounded-lg transition-colors"
               >
                 Got It!
               </button>
