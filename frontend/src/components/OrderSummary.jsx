@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { MoveRight } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "../lib/axios";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const stripePromise = loadStripe(
 	"pk_test_51RfNSxDAlHiXMMaGok8oLcEJxNzGCJAeKwYvX8fehPfeA6bC9Afs3XBgklUBlCmFMGDPFWsW7NxQfVcJa96wiAx100S6GC0DnX"
@@ -11,19 +13,20 @@ const stripePromise = loadStripe(
 
 const OrderSummary = () => {
 	const { total, subtotal, coupon, isCouponApplied, cart } = useCartStore();
+	const [isProcessing, setIsProcessing] = useState(false);
 
 	const savings = subtotal - total;
 	const formattedSubtotal = subtotal.toFixed(2);
 	const formattedTotal = total.toFixed(2);
 	const formattedSavings = savings.toFixed(2);
 
-	const handlePayment = async () => {
+	const handleStripePayment = async () => {
 		try {
 			const stripe = await stripePromise;
 			
 			// Validate cart data before sending
 			if (!cart || cart.length === 0) {
-				console.error("Cart is empty");
+				toast.error("Cart is empty");
 				return;
 			}
 			
@@ -35,7 +38,7 @@ const OrderSummary = () => {
 			const session = res.data;
 			
 			if (!session.id) {
-				console.error("Invalid session data received:", session);
+				toast.error("Invalid session data received");
 				return;
 			}
 			
@@ -44,10 +47,11 @@ const OrderSummary = () => {
 			});
 
 			if (result.error) {
-				console.error("Stripe error:", result.error);
+				toast.error(`Stripe error: ${result.error.message}`);
 			}
 		} catch (error) {
 			console.error("Payment error:", error);
+			toast.error("Payment failed. Please try again.");
 			if (error.response) {
 				// Server responded with error status
 				console.error("Server error response:", error.response.data);
@@ -98,12 +102,13 @@ const OrderSummary = () => {
 				</div>
 
 				<motion.button
-					className='flex w-full items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-300'
+					className='flex w-full items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-300 disabled:opacity-50'
 					whileHover={{ scale: 1.05 }}
 					whileTap={{ scale: 0.95 }}
-					onClick={handlePayment}
+					onClick={handleStripePayment}
+					disabled={isProcessing}
 				>
-					Proceed to Checkout
+					{isProcessing ? "Processing..." : "Proceed to Checkout with Stripe"}
 				</motion.button>
 
 				<div className='flex items-center justify-center gap-2'>

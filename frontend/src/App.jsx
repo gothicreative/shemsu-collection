@@ -17,6 +17,7 @@ import { useCartStore } from "./stores/useCartStore";
 import PurchaseSuccessPage from "./pages/PurchaseSuccessPage";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage";
 import HowToUseOverlay from "./components/HowToUseOverlay";
+import TelbirrCheckoutPage from "./pages/TelbirrCheckoutPage";
 
 function App() {
 	const { user, checkAuth, checkingAuth } = useUserStore();
@@ -70,6 +71,7 @@ function App() {
 					/>
 					<Route path='/category/:category' element={<CategoryPage />} />
 					<Route path='/cart' element={user ? <CartPage /> : <Navigate to='/login' />} />
+					<Route path='/checkout/telbirr' element={user ? <TelbirrCheckoutPage /> : <Navigate to='/login' />} />
 					<Route
 						path='/purchase-success'
 						element={user ? <PurchaseSuccessPage /> : <Navigate to='/login' />}

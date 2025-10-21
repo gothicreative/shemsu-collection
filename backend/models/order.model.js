@@ -31,7 +31,16 @@ const orderSchema = new mongoose.Schema(
 			required: true,
 			min: 0,
 		},
+		paymentMethod: {
+			type: String,
+			enum: ["stripe", "telbirr"],
+			default: "stripe"
+		},
 		stripeSessionId: {
+			type: String,
+			unique: true,
+		},
+		telbirrReference: {
 			type: String,
 			unique: true,
 		},
